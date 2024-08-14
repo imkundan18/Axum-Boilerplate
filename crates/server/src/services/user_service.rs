@@ -3,7 +3,7 @@ use std::sync::Arc;
 use anyhow::Ok;
 use async_trait::async_trait;
 use database::user::{model::User, repository::DynUserRepository};
-use mongodb::results::InsertOneResult;
+use mongodb::results::{DeleteResult, InsertOneResult, UpdateResult};
 use tracing::{error, info};
 //use utils::{AppError, AppResult};
 
@@ -22,6 +22,10 @@ pub trait UserServiceTrait {
     async fn signup_user(&self, request: SignUpUserDto) -> Result<InsertOneResult, anyhow::Error>/*AppResult<InsertOneResult>*/;
 
     async fn create_users(&self, request: SignUpUserDto) ->Result<InsertOneResult, anyhow::Error>/*AppResult<InsertOneResult>*/;
+
+    async fn update_users(&self, request: SignUpUserDto, id:String) ->Result<UpdateResult, anyhow::Error>;
+
+    async fn delete_users(&self, id:String) ->Result<DeleteResult, anyhow::Error>;
 }
 
 #[derive(Clone)]
@@ -75,12 +79,22 @@ impl UserServiceTrait for UserService {
         let name = req.name.unwrap();
         let email = req.email.unwrap();
         let password = req.password.unwrap();
-
-        // let name = req.name.as_ref().unwrap().as_str();
-        // let email = req.email.as_ref().unwrap().as_str();
-        // let password = req.password.as_ref().unwrap().as_str();
-
         let newuser=self.repository.create_user(&name, &email, &password).await?;
         Ok(newuser)
+    }
+
+    async fn update_users(&self, request: SignUpUserDto, id:String) ->Result<UpdateResult, anyhow::Error>{
+        let id = id;
+        let name = request.name.unwrap();
+        let email = request.email.unwrap();
+        let password = request.password.unwrap();
+        let updateuser=self.repository.update_user(&id, &name, &email, &password).await?;
+        Ok(updateuser)
+    }
+
+    async fn delete_users(&self, id:String) ->Result<DeleteResult, anyhow::Error>{
+        let id = id;
+        let deleteuser=self.repository.delete_user(&id).await?;
+        Ok(deleteuser)
     }
 }
