@@ -1,6 +1,5 @@
 use axum::{
-    routing::{get, post},
-    Extension, Json, Router,
+    routing::{get, post}, Extension, Json, Router
 };
 
 use database::user::model::User;
@@ -17,6 +16,7 @@ impl UserController {
     pub fn app() -> Router {
         Router::new()
             .route("/", get(Self::all))
+            .route("/create", post(Self::create))
             .route("/signup", post(Self::signup))
     }
 
@@ -31,6 +31,12 @@ impl UserController {
     ) -> AppResult<Json<InsertOneResult>> {
         let created_user = services.user.signup_user(req).await?;
 
+        Ok(Json(created_user))
+    }
+
+    pub async fn create(Extension(services):Extension<Services>,Json(req):Json<SignUpUserDto>) -> AppResult<Json<InsertOneResult>>{
+        let request=req;
+        let created_user = services.user.create_users(request).await?;
         Ok(Json(created_user))
     }
 }

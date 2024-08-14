@@ -46,6 +46,7 @@ impl UserRepositoryTrait for Database {
         name: &str,
         email: &str,
         password: &str,
+        
     ) -> AppResult<InsertOneResult> {
         let new_doc = User {
             id: None,
