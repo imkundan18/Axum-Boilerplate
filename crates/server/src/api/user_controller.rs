@@ -16,7 +16,7 @@ impl UserController {
     pub fn app() -> Router {
         Router::new()
             .route("/", get(Self::all))
-            .route("/create/new", post(Self::create))
+            .route("/create", post(Self::create))
             .route("/signup", post(Self::signup))
     }
 
